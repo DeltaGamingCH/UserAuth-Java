@@ -16,7 +16,7 @@ public class DatabaseAPI {
         ensureDatabaseExists();
     }
 
-    private void ensureDatabaseExists() { //Checks whether 'data' directory and 'db.sqlite' exists and creates otherwise
+    private void ensureDatabaseExists() { // Checks whether 'data' directory and 'db.sqlite' exists and creates otherwise
         try {
             File dataDir = new File(System.getProperty("user.dir") + "/data");
             File databaseFile = new File(url.substring(12));
@@ -42,7 +42,7 @@ public class DatabaseAPI {
         }
     }
 
-    public void createTable(String tableName, String fields) { //Creates table if not existing
+    public void createTable(String tableName, String fields) { // Creates table if not existing
         try (var conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 var sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "';";
