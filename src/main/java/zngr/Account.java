@@ -1,43 +1,48 @@
-/*  Account
- *
- *  Copyright (C) 2023  Robert Schoech
- *  
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package zngr;
 
 public class Account extends DatabaseAPI {
 
+    private static final String USERS_TABLE = "users";
+    private static final String EMAIL_FIELD = "email";
+    private static final String PASSWORD_FIELD = "password";
+
     public void initAccount() {
-         System.out.println("initAccount not implemented");
+        String fields = "userid INTEGER PRIMARY KEY AUTOINCREMENT, " + "email TEXT UNIQUE, " + "password TEXT";
+        createTable(USERS_TABLE, fields);
     }
 
-    public void addAccount(String name, String password) {
-         System.out.println("addAccount not implemented");
+    public void addAccount(String email, String password) {
+        String fields = EMAIL_FIELD + ", " + PASSWORD_FIELD;
+        String values = "'" + email + "', '" + password + "'";
+
+        insert(USERS_TABLE, fields, values);
+
+        try {
+            insert(USERS_TABLE, fields, values);
+            System.out.println("User created: ");
+            System.out.println("Email: " + email);
+            System.out.println("Password: " + password);
+        } catch (Exception e) {
+            System.out.println("Error inserting user: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
-   
+
 
     public boolean verifyAccount(String userName) {
-        System.out.println("verifyAccount not implemented");
-        return false;
+        System.out.println("verifyAccount ran with user: " + userName);
+
+        if (userName == null || userName.isEmpty()) {
+            System.out.println("User name is null or empty!");
+            return false;
+        }
+
+        return isKeyAvailable(USERS_TABLE, EMAIL_FIELD, "'" + userName + "'");
     }
 
     public boolean verifyPassword(String userName, String password) {
         System.out.println("verifyPassword not implemented");
         return false;
     }
-
 }
 
