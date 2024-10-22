@@ -39,3 +39,6 @@ build/
 
 ### Database ###
 /data/db.sqlite
+
+### Config ###
+/config.properties
