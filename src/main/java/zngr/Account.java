@@ -9,12 +9,14 @@ public class Account extends DatabaseAPI {
     private static final String EMAIL_FIELD = "email";
     private static final String PASSWORD_FIELD = "password";
     private static final String SALT_FIELD = "salt";
+    private static final String LOGIN_ATTEMPTS_FIELD = "failed_login_attempts";
 
     public void initAccount() { // Create users table, email, hashed password, salt
         String fields = "userid INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "email TEXT UNIQUE, " +
                 "password TEXT, " +
-                "salt TEXT";
+                "salt TEXT, " +
+                "failed_login_attempts INTEGER DEFAULT 0";
         createTable(USERS_TABLE, fields);
     }
 
@@ -24,8 +26,8 @@ public class Account extends DatabaseAPI {
 
             String hashedPassword = PasswordHasher.hashPassword(password, salt);
 
-            String fields = EMAIL_FIELD + ", " + PASSWORD_FIELD + ", " + SALT_FIELD;
-            String values = "'" + email + "', '" + hashedPassword + "', '" + salt + "'";
+            String fields = EMAIL_FIELD + ", " + PASSWORD_FIELD + ", " + SALT_FIELD + ", " + LOGIN_ATTEMPTS_FIELD;
+            String values = "'" + email + "', '" + hashedPassword + "', '" + salt + "', 0";
 
             insert(USERS_TABLE, fields, values);
 
@@ -43,7 +45,7 @@ public class Account extends DatabaseAPI {
         }
     }
 
-    public void updateAccount(String email, String newPassword, String newSalt) {
+    public void updateAccount(String email, String newPassword, String newSalt) { // Updated account information
         try {
             String hashedPassword = PasswordHasher.hashPassword(newPassword, newSalt);
 
@@ -81,12 +83,54 @@ public class Account extends DatabaseAPI {
                 return false;
             }
 
-            return PasswordHasher.verifyPassword(providedPassword, storedHash, salt);
+            System.out.println("Stored hash: " + storedHash);
+            System.out.println("Salt: " + salt);
+
+            boolean isCorrect = PasswordHasher.verifyPassword(providedPassword, storedHash, salt);
+
+            if (isCorrect) {
+                resetLoginAttempts(email);
+                System.out.println("Password verification successful for user: " + email);
+            } else {
+                incrementLoginAttempts(email);
+                System.out.println("Password verification failed for user: " + email);
+            }
+
+            return isCorrect;
 
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             System.out.println("Error verifying password: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void incrementLoginAttempts(String email) { // Increments the amount of failed login attempts
+        try {
+            int currentAttempts = Integer.parseInt(getValue(USERS_TABLE, EMAIL_FIELD, "'" + email + "'", LOGIN_ATTEMPTS_FIELD));
+            update(USERS_TABLE, LOGIN_ATTEMPTS_FIELD, String.valueOf(currentAttempts + 1), EMAIL_FIELD, "'" + email + "'");
+        } catch (Exception e) {
+            System.out.println("Error incrementing login attempts: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void resetLoginAttempts(String email) { // Resets the amount of login attempts
+        try {
+            update(USERS_TABLE, LOGIN_ATTEMPTS_FIELD, "0", EMAIL_FIELD, "'" + email + "'");
+        } catch (Exception e) {
+            System.out.println("Error resetting login attempts: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public int getLoginAttempts(String email) { // Gets the amounts of failed login attempts
+        try {
+            return Integer.parseInt(getValue(USERS_TABLE, EMAIL_FIELD, "'" + email + "'", LOGIN_ATTEMPTS_FIELD));
+        } catch (Exception e) {
+            System.out.println("Error getting login attempts: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
         }
     }
 }

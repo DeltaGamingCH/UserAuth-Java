@@ -74,12 +74,14 @@ public class AccountController {
     @FXML
     private Button btBackToLogin;
 
+    private LoginBlocker loginBlocker;
 
     @FXML
     private void initialize() throws Exception {
         // create and init DB-Tables
         account = new Account();
         account.initAccount();
+        loginBlocker = new LoginBlocker(account, tfUsername, pfLoginPassword, btLogin, lbLoginMessage);
         System.out.println("Account table initialized.");
     }   
 
@@ -124,23 +126,25 @@ public class AccountController {
 
     @FXML
     private void onLogin(ActionEvent event) {
-        resetPassword(null);
+        resetPassword(null); // Hide password reset fields
 
-        String name = tfUsername.getText();
-        String pw = pfLoginPassword.getText();
+        String email = tfUsername.getText().trim();
+        String password = pfLoginPassword.getText().trim();
 
-        if (account.verifyPassword(name, pw)) {
+        // Enable LoginBlocker to manage login attempts
+        if (loginBlocker.handleLoginAttempts(email, password)) {
             tabPane.getTabs().get(0).setDisable(true);
             tabPane.getTabs().get(1).setDisable(true);
             tabPane.getTabs().get(2).setDisable(true);
             tabPane.getTabs().get(3).setDisable(false);
             tabPane.getSelectionModel().select(3);
         } else {
-            lbLoginMessage.setText("'Email' or 'Password' are wrong");
+            lbLoginMessage.setText("Incorrect email or password.");
             tabPane.getTabs().get(0).setDisable(false);
         }
     }
-   
+
+
     @FXML
     private void onLogout(ActionEvent event) {
         // set tabs
