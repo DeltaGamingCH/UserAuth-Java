@@ -106,6 +106,21 @@ public class DatabaseAPI {
         return null;
     }
 
+    public void update(String tableName, String fieldToUpdate, String newValue, String keyField, String keyValue) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+            if (conn != null) {
+                var stmt = conn.createStatement();
+                var sql = "UPDATE " + tableName + " SET " + fieldToUpdate + " = " + newValue + " WHERE " + keyField + " = " + keyValue;
+                stmt.executeUpdate(sql);
+                System.out.println("Updated user: " + fieldToUpdate + " = " + newValue + " for " + keyField + " = " + keyValue);
+                stmt.close();
+                conn.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in update: " + e.getMessage());
+        }
+    }
+
     public boolean isKeyAvailable(String tableName, String keyName, String keyValue) {
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {

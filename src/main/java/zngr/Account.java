@@ -43,6 +43,23 @@ public class Account extends DatabaseAPI {
         }
     }
 
+    public void updateAccount(String email, String newPassword, String newSalt) {
+        try {
+            String hashedPassword = PasswordHasher.hashPassword(newPassword, newSalt);
+
+            update(USERS_TABLE, PASSWORD_FIELD, "'" + hashedPassword + "'", EMAIL_FIELD, "'" + email + "'");
+            update(USERS_TABLE, SALT_FIELD, "'" + newSalt + "'", EMAIL_FIELD, "'" + email + "'");
+
+            System.out.println("Password and salt updated for user: " + email);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            System.out.println("Error hashing password: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Error updating password: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public boolean verifyAccount(String email) { // Verifies that account exists with email
         System.out.println("verifyAccount ran with user: " + email);
 

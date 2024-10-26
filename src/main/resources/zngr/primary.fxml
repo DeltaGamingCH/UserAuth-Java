@@ -16,6 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.Hyperlink?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zngr.AccountController">
    <children>
       <ScrollPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -72,50 +73,98 @@
                         </AnchorPane>
                   </content>
                 </Tab>
-                <Tab text="Step 2: Log In">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <VBox alignment="CENTER" prefHeight="263.0" prefWidth="560.0" spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-                                 <children>
-                                    <Label text="Log In">
-                                       <font>
-                                          <Font name="System Bold" size="18.0" />
-                                       </font>
-                                    </Label>
-                                    <GridPane prefHeight="191.0" prefWidth="372.0">
-                                       <columnConstraints>
-                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="59.399965667724615" />
-                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="524.0" minWidth="10.0" prefWidth="413.0000343322754" />
-                                       </columnConstraints>
-                                       <rowConstraints>
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                       </rowConstraints>
-                                       <children>
-                                          <Label text="Email" />
-                                          <Label text="Password" GridPane.rowIndex="1" />
-                                          <TextField fx:id="tfUsername" prefWidth="550.0" GridPane.columnIndex="1" />
-                                          <Label fx:id="lbLoginMessage" text="Login with your account" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                             <font>
-                                                <Font name="System Bold" size="12.0" />
-                                             </font>
+                  <Tab text="Step 2: Log In">
+                      <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                              <children>
+                                  <VBox alignment="CENTER" prefHeight="263.0" prefWidth="560.0" spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                                      <children>
+                                          <!-- Login Section -->
+                                          <Label text="Log In">
+                                              <font>
+                                                  <Font name="System Bold" size="18.0" />
+                                              </font>
                                           </Label>
-                                          <PasswordField fx:id="pfLoginPassword" prefHeight="26.0" prefWidth="426.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Button fx:id="btLogin" mnemonicParsing="false" onAction="#onLogin" text="Log In" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </GridPane>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </Tab>
+                                          <GridPane fx:id="loginContainer" prefHeight="154.0" prefWidth="543.0">
+                                              <columnConstraints>
+                                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="97.8" />
+                                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="524.0" minWidth="10.0" prefWidth="374.6" />
+                                              </columnConstraints>
+                                              <rowConstraints>
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              </rowConstraints>
+                                              <children>
+                                                  <Label text="Email"/>
+                                                  <TextField fx:id="tfUsername" GridPane.columnIndex="1"/>
+                                                  <Label text="Password" GridPane.rowIndex="1"/>
+                                                  <PasswordField fx:id="pfLoginPassword" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                                  <Button fx:id="btLogin" text="Log In" onAction="#onLogin" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                                  <Label fx:id="lbLoginMessage" text="" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                      <font>
+                                                          <Font name="System Bold Italic"/>
+                                                      </font>
+                                                  </Label>
+                                              </children>
+                                          </GridPane>
+                                          <Button text= "Forgot Password?" onAction="#onResetPasswordClick"/>
+                                      </children>
+                                  </VBox>
+                              </children>
+                          </AnchorPane>
+                      </content>
+                  </Tab>
+                  <Tab fx:id="passwordResetTab" text="Password Reset" disable="true">
+                      <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0">
+                              <children>
+                                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+                                      <children>
+                                          <Label text="Reset Password">
+                                              <font>
+                                                  <Font name="System Bold" size="18.0" />
+                                              </font>
+                                          </Label>
+                                          <GridPane prefHeight="154.0" prefWidth="543.0">
+                                              <columnConstraints>
+                                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="97.8" />
+                                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="524.0" minWidth="10.0" prefWidth="374.6" />
+                                              </columnConstraints>
+                                              <rowConstraints>
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              </rowConstraints>
+                                              <children>
+                                                  <Label text="Email" />
+                                                  <TextField fx:id="tfResetEmail" promptText="Enter your email" GridPane.columnIndex="1" />
+                                                  <Label text="New Password" GridPane.rowIndex="1" />
+                                                  <PasswordField fx:id="pfNewPassword" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                  <Label text="Confirm New Password" GridPane.rowIndex="2" />
+                                                  <PasswordField fx:id="pfConfirmNewPassword" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                      <Button fx:id="btConfirmResetPassword" mnemonicParsing="false" onAction="#onConfirmResetPassword" text="Reset Password"/>
+                                                      <Button fx:id="btBackToLogin" mnemonicParsing="false" onAction="#onBackToLoginClick" text="Back to Login"/>
+                                                  </HBox>
+                                              </children>
+                                              <padding>
+                                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                              </padding>
+                                          </GridPane>
+                                          <Label fx:id="lbResetPasswordMessage" text="">
+                                              <font>
+                                                  <Font name="System Bold" size="12.0" />
+                                              </font>
+                                          </Label>
+                                      </children>
+                                  </VBox>
+                              </children>
+                          </AnchorPane>
+                      </content>
+                  </Tab>
                   <Tab disable="true" text="Step3: Welcome">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">

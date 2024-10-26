@@ -2,11 +2,9 @@ package zngr;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 public class AccountController {
 
@@ -44,7 +42,39 @@ public class AccountController {
 
     @FXML
     private TextField tfUsername;
- 
+
+    // Password Reset
+    @FXML
+    private GridPane passwordResetContainer;
+
+    @FXML
+    private Tab passwordResetTab;
+
+    @FXML
+    private GridPane loginContainer;
+
+    @FXML
+    private Button btResetPassword;
+
+    @FXML
+    private PasswordField pfNewPassword;
+
+    @FXML
+    private PasswordField pfConfirmNewPassword;
+
+    @FXML
+    private Button btConfirmResetPassword;
+
+    @FXML
+    private TextField tfResetEmail;
+
+    @FXML
+    private Label lbResetPasswordMessage;
+
+    @FXML
+    private Button btBackToLogin;
+
+
     @FXML
     private void initialize() throws Exception {
         // create and init DB-Tables
@@ -78,8 +108,7 @@ public class AccountController {
             lbSignUpMessage.setText("Email " + name + " has already an account");
             return;
         }
-        
-        // add new account
+
         account.addAccount(name, pw);
         
         // select tab 'Log In'
@@ -95,14 +124,17 @@ public class AccountController {
 
     @FXML
     private void onLogin(ActionEvent event) {
+        resetPassword(null);
+
         String name = tfUsername.getText();
         String pw = pfLoginPassword.getText();
-                        
+
         if (account.verifyPassword(name, pw)) {
             tabPane.getTabs().get(0).setDisable(true);
             tabPane.getTabs().get(1).setDisable(true);
-            tabPane.getTabs().get(2).setDisable(false);
-            tabPane.getSelectionModel().select(2);
+            tabPane.getTabs().get(2).setDisable(true);
+            tabPane.getTabs().get(3).setDisable(false);
+            tabPane.getSelectionModel().select(3);
         } else {
             lbLoginMessage.setText("'Email' or 'Password' are wrong");
             tabPane.getTabs().get(0).setDisable(false);
@@ -115,12 +147,64 @@ public class AccountController {
         tabPane.getTabs().get(0).setDisable(false);
         tabPane.getTabs().get(1).setDisable(false);
         tabPane.getTabs().get(2).setDisable(true);
-        
-        // reset login and select tab 'Log in'
+        tabPane.getTabs().get(3).setDisable(true);
+
         resetLogin();   
-        tabPane.getSelectionModel().select(1);      
+        tabPane.getSelectionModel().select(1);
     }
-    
+
+    @FXML
+    private void onResetPasswordClick(ActionEvent event) { // Login Tab: ResetButton
+        passwordResetTab.setDisable(false);
+        tabPane.getSelectionModel().select(2);
+    }
+
+    @FXML
+    private void onBackToLoginClick(ActionEvent event) { // ResetPassword: Select Login page
+        passwordResetTab.setDisable(true);
+        tabPane.getSelectionModel().select(1);
+    }
+
+    @FXML
+    private void resetPassword(ActionEvent event) { // Hide password reset fields
+        passwordResetTab.setDisable(true);
+    }
+
+    @FXML
+    private void onConfirmResetPassword(ActionEvent event) throws Exception {
+        String email = tfResetEmail.getText().trim();
+        String newPassword = pfNewPassword.getText().trim();
+        String confirmPassword = pfConfirmNewPassword.getText().trim();
+
+        if (email.isEmpty()) {
+            lbResetPasswordMessage.setText("Please enter an email");
+            return;
+        }
+
+        if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+            lbResetPasswordMessage.setText("Please enter and confirm the new password");
+            return;
+        }
+
+        PasswordReset passwordReset = new PasswordReset(account);
+
+        String resultMessage = passwordReset.resetPassword(email, newPassword, confirmPassword);
+
+        lbResetPasswordMessage.setText(resultMessage);
+
+        if (resultMessage.equals("Password has been reset successfully")) {
+            resetPasswordFields();
+            onBackToLoginClick(null);
+        }
+    }
+
+    private void resetPasswordFields() {
+        tfResetEmail.setText("");
+        pfNewPassword.setText("");
+        pfConfirmNewPassword.setText("");
+        lbResetPasswordMessage.setText("");
+    }
+
     private void resetLogin() {
         tfUsername.setText("");
         pfLoginPassword.setText("");
