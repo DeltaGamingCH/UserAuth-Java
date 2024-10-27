@@ -79,6 +79,7 @@ public class LoginBlocker {
             }
         }, 0, 1000);
     }
+
     private void disableLoginControls(boolean disable) { // Disables the login elements
         usernameField.setDisable(disable);
         passwordField.setDisable(disable);
