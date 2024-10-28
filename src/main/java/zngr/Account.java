@@ -6,36 +6,47 @@ import java.security.spec.InvalidKeySpecException;
 public class Account extends DatabaseAPI {
 
     private static final String USERS_TABLE = "users";
+    private static final String SALT_TABLE = "salts";
     private static final String EMAIL_FIELD = "email";
     private static final String PASSWORD_FIELD = "password";
     private static final String SALT_FIELD = "salt";
+    private static final String USER_ID_FIELD = "userid";
     private static final String LOGIN_ATTEMPTS_FIELD = "failed_login_attempts";
 
     public void initAccount() { // Create users table, email, hashed password, salt
         String fields = "userid INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "email TEXT UNIQUE, " +
                 "password TEXT, " +
-                "salt TEXT, " +
                 "failed_login_attempts INTEGER DEFAULT 0";
         createTable(USERS_TABLE, fields);
+
+        String saltFields = "userid INTEGER PRIMARY KEY, " +
+                "salt TEXT, " +
+                "FOREIGN KEY (userid) REFERENCES " + USERS_TABLE + "(userid)";
+        createTable(SALT_TABLE, saltFields);
     }
 
     public void addAccount(String email, String password) { // Create new user with email, hashed password, salt
         try {
             String salt = PasswordHasher.generateSalt();
-
             String hashedPassword = PasswordHasher.hashPassword(password, salt);
 
-            String fields = EMAIL_FIELD + ", " + PASSWORD_FIELD + ", " + SALT_FIELD + ", " + LOGIN_ATTEMPTS_FIELD;
-            String values = "'" + email + "', '" + hashedPassword + "', '" + salt + "', 0";
+            String userFields = EMAIL_FIELD + ", " + PASSWORD_FIELD + ", " + LOGIN_ATTEMPTS_FIELD;
+            String userValues = "'" + email + "', '" + hashedPassword + "', 0";
+            int userId = insert(USERS_TABLE, userFields, userValues);
 
-            insert(USERS_TABLE, fields, values);
+            if (userId != -1) {
+                String saltFields = USER_ID_FIELD + ", " + SALT_FIELD;
+                String saltValues = userId + ", '" + salt + "'";
+                insert(SALT_TABLE, saltFields, saltValues);
 
-            System.out.println("User created: ");
-            System.out.println("Email: " + email);
-            System.out.println("Hashed password: " + hashedPassword);
-            System.out.println("Salt: " + salt);
-
+                System.out.println("User created: ");
+                System.out.println("Email: " + email);
+                System.out.println("Hashed password: " + hashedPassword);
+                System.out.println("Salt: " + salt);
+            } else {
+                System.out.println("Failed to create user. No user ID returned.");
+            }
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             System.out.println("Error hashing password: " + e.getMessage());
             e.printStackTrace();
@@ -48,9 +59,10 @@ public class Account extends DatabaseAPI {
     public void updateAccount(String email, String newPassword, String newSalt) { // Updated account information
         try {
             String hashedPassword = PasswordHasher.hashPassword(newPassword, newSalt);
+            String userId = getValue(USERS_TABLE, EMAIL_FIELD, "'" + email + "'", USER_ID_FIELD);
 
             update(USERS_TABLE, PASSWORD_FIELD, "'" + hashedPassword + "'", EMAIL_FIELD, "'" + email + "'");
-            update(USERS_TABLE, SALT_FIELD, "'" + newSalt + "'", EMAIL_FIELD, "'" + email + "'");
+            update(SALT_TABLE, SALT_FIELD, "'" + newSalt + "'", USER_ID_FIELD, userId);
 
             System.out.println("Password and salt updated for user: " + email);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -75,8 +87,9 @@ public class Account extends DatabaseAPI {
 
     public boolean verifyPassword(String email, String providedPassword) { // Verifies if provided password matches stored hash
         try {
+            String userId = getValue(USERS_TABLE, EMAIL_FIELD, "'" + email + "'", USER_ID_FIELD);
             String storedHash = getValue(USERS_TABLE, EMAIL_FIELD, "'" + email + "'", PASSWORD_FIELD);
-            String salt = getValue(USERS_TABLE, EMAIL_FIELD, "'" + email + "'", SALT_FIELD);
+            String salt = getValue(SALT_TABLE, USER_ID_FIELD, userId, SALT_FIELD);
 
             if (storedHash == null || salt == null) {
                 System.out.println("Account with email " + email + " not found.");

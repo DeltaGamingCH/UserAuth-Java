@@ -63,24 +63,30 @@ public class DatabaseAPI {
         }
     }
 
-    public void insert(String tableName, String fields, String values) {
+    public int insert(String tableName, String fields, String values) {
+        int lastInsertedId = -1;
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 conn.setAutoCommit(false);
-                var stmt = conn.createStatement();
-                var sql = "INSERT INTO " + tableName + "("  + fields + ") VALUES (" + values +")";
-                stmt.executeUpdate(sql);
-
-                stmt.close();
-                conn.commit();
-                conn.close();
+                try (Statement stmt = conn.createStatement()) {
+                    String sql = "INSERT INTO " + tableName + "(" + fields + ") VALUES (" + values + ")";
+                    stmt.executeUpdate(sql);
+                    try (ResultSet rs = stmt.executeQuery("SELECT last_insert_rowid()")) {
+                        if (rs.next()) {
+                            lastInsertedId = rs.getInt(1);
+                        }
+                    }
+                    conn.commit();
+                }
+                System.out.println("Insert in " + tableName + " is done");
             }
-            System.out.println("Insert in " + tableName + " is done");
-
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error in insert: " + e.getMessage());
         }
+        return lastInsertedId;
     }
+
+
 
     public String getValue(String tableName, String keyName, String keyValue, String fieldName) {
         try (Connection conn = DriverManager.getConnection(url)) {
