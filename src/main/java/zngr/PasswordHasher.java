@@ -15,6 +15,7 @@ public class PasswordHasher {
     private static final int KEY_LENGTH = 256;
     private static final String ALGORITHM = "PBKDF2WithHmacSHA256";
     private static final int SALT_LENGTH = 16;
+    private static final String PEPPER = loadPepper();
 
     private static String loadPepper() {
         Properties properties = new Properties();
@@ -34,11 +35,16 @@ public class PasswordHasher {
     }
 
     public static String hashPassword(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException { // Hashes password with salt and pepper
-        String pepper = loadPepper();
-        String pepperedPassword = password + pepper;
-        PBEKeySpec spec = new PBEKeySpec(pepperedPassword.toCharArray(), Base64.getDecoder().decode(salt), ITERATIONS, KEY_LENGTH);
+        byte[] saltBytes = Base64.getDecoder().decode(salt);
+        byte[] pepperBytes = PEPPER.getBytes();
+        byte[] combinedSalt = new byte[saltBytes.length + pepperBytes.length];
+        System.arraycopy(saltBytes, 0, combinedSalt, 0, saltBytes.length);
+        System.arraycopy(pepperBytes, 0, combinedSalt, saltBytes.length, pepperBytes.length);
+
+        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), combinedSalt, ITERATIONS, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
         byte[] hash = factory.generateSecret(spec).getEncoded();
+
         return Base64.getEncoder().encodeToString(hash);
     }
 
