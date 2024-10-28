@@ -11,7 +11,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 public class PasswordHasher {
-
     private static final int ITERATIONS = 65536;
     private static final int KEY_LENGTH = 256;
     private static final String ALGORITHM = "PBKDF2WithHmacSHA256";
@@ -26,6 +25,7 @@ public class PasswordHasher {
             throw new RuntimeException("Error loading pepper from config file", e);
         }
     }
+
     public static String generateSalt() { // Generates a new salt
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[SALT_LENGTH];

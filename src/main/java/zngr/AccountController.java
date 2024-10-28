@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 
 public class AccountController {
 
@@ -44,8 +43,6 @@ public class AccountController {
     private TextField tfUsername;
 
     // Password Reset
-    @FXML
-    private GridPane passwordResetContainer;
 
     @FXML
     private Tab passwordResetTab;

@@ -1,7 +1,7 @@
 package zngr;
 
 public class PasswordReset {
-    private Account account;
+    private final Account account;
 
     public PasswordReset(Account account) {
         this.account = account;
