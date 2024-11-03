@@ -46,12 +46,12 @@ public class AccountController {
 
     @FXML
     private Tab passwordResetTab;
-
+/*
     @FXML
-    private GridPane loginContainer;
-
+    private GridPane loginContainer;*/
+/*
     @FXML
-    private Button btResetPassword;
+    private Button btResetPassword;*/
 
     @FXML
     private PasswordField pfNewPassword;
