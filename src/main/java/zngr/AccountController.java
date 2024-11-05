@@ -3,7 +3,6 @@ package zngr;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 
 public class AccountController {
 
@@ -11,12 +10,6 @@ public class AccountController {
     
     @FXML
     private Button btLogin;
-    
-    @FXML
-    private Button btLogout;
-
-    @FXML
-    private Button btSignUp;
 
     @FXML
     private Label lbLoginMessage;
@@ -46,12 +39,6 @@ public class AccountController {
 
     @FXML
     private Tab passwordResetTab;
-/*
-    @FXML
-    private GridPane loginContainer;*/
-/*
-    @FXML
-    private Button btResetPassword;*/
 
     @FXML
     private PasswordField pfNewPassword;
@@ -60,16 +47,10 @@ public class AccountController {
     private PasswordField pfConfirmNewPassword;
 
     @FXML
-    private Button btConfirmResetPassword;
-
-    @FXML
     private TextField tfResetEmail;
 
     @FXML
     private Label lbResetPasswordMessage;
-
-    @FXML
-    private Button btBackToLogin;
 
     private LoginBlocker loginBlocker;
 
